@@ -1,19 +1,27 @@
 {
   "name": "koishi-plugin-nlr-meme",
-  "description": "",
-  "version": "0.0.1",
+  "description": "mirai草图插件的koishi版本",
+  "version": "1.0.3",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
+  "homepage": "https://github.com/Apricityx/koishi-plugin-NLR-meme.git",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Apricityx/koishi-plugin-NLR-meme.git"
+  },
   "files": [
     "lib",
     "dist"
   ],
   "license": "MIT",
   "scripts": {},
+  "contributors": [
+    "Apricityx <apricityx@qq.com>"
+  ],
   "keywords": [
-    "chatbot",
-    "koishi",
-    "plugin"
+    "NRL",
+    "生草",
+    "草图"
   ],
   "peerDependencies": {
     "koishi": "^4.16.4"
