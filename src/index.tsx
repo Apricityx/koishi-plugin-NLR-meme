@@ -16,6 +16,27 @@ export const Config: Schema<Config> = Schema.object({
 })
 
 export function apply(ctx: Context, config: Config) {
+    function content_generator(time) {
+        deTbug('content_generator启动')
+        let divs = [];
+        for (let i = 0; i < time; i++) {
+            divs.push(<message>
+                <author id="3026194904" name="Apricityx" avatar="url"/>
+                <img src={url}/>
+            </message>);
+        }
+        return divs;
+    }
+
+    // ctx.command('test').action(({session}) => {
+    //     deTbug('test')
+    //     // 等待5s
+    //
+    //     // session.send('欢迎 ' + h('message', { id: session.userId }) + ' 入群！')
+    //     // session.send('test')
+    //     // session.send('dwqdwqdwd' + h('at', {id: 2022784837}))
+    //
+    // })
     //如果文件夹./meme不存在则创建
     const botId = config['botId']
     const avatarPath = "https://q1.qlogo.cn/g?b=qq&nk=" + botId + "&s=100"
@@ -31,38 +52,41 @@ export function apply(ctx: Context, config: Config) {
         deTbug('草')
         session.send(h('img', {src: url}))
     })
-    ctx.command('生大草').action(({session}) => {
-        deTbug('草草草草草草草草草草草草草草草')
+    ctx.command('生中草').action(({session}) => {
         // sendMeme(session)
-        session.send(h('img', {src: url}))
-        session.send(h('img', {src: url}))
-        session.send(h('img', {src: url}))
-        session.send(h('img', {src: url}))
-        session.send(h('img', {src: url}))
-        // session.send(
-        //     <message forward>
-        //         <message>
-        //             <author id={botId} name=" " avatar={avatarPath}/>
-        //             <img src="https://meme.3sqrt7.com/api/image"/>
-        //         </message>
-        //         <message>
-        //             <author id={botId} name=" " avatar={avatarPath}/>
-        //             <img src="https://meme.3sqrt7.com/api/image"/>
-        //         </message>
-        //         <message>
-        //             <author id={botId} name=" " avatar={avatarPath}/>
-        //             <img src="https://meme.3sqrt7.com/api/image"/>
-        //         </message>
-        //         <message>
-        //             <author id={botId} name=" " avatar={avatarPath}/>
-        //             <img src="https://meme.3sqrt7.com/api/image"/>
-        //         </message>
-        //         <message>
-        //             <author id={botId} name=" " avatar={avatarPath}/>
-        //             <img src="https://meme.3sqrt7.com/api/image"/>
-        //         </message>
-        //     </message>
-        // )
+        session.send(<>
+            <message forward>
+                {content_generator(5)}
+            </message>
+        </>)
+    })
+    ctx.command('生大草').action(({session}) => {
+        // sendMeme(session)
+        session.send(<>
+            <message forward>
+                {content_generator(10)}
+            </message>
+        </>)
+    })
+    ctx.command('生巨草').action(({session}) => {
+        session.send(<>
+            <message forward>
+                {content_generator(20)}
+            </message>
+        </>)
+    })
+    ctx.command('生好多草 [arg:number]').action(({session}, arg) => {
+        if (arg > 50) {
+            session.send('太多了，我生不动了')
+            return
+        } else {
+            session.send('生草' + arg + '次')
+            session.send(<>
+                <message forward>
+                    {content_generator(arg)}
+                </message>
+            </>)
+        }
     })
 
 
@@ -93,23 +117,4 @@ export function apply(ctx: Context, config: Config) {
         if (ifDebug)
             logger.success(text)
     }
-
-    // ctx.on('message', (session) => {
-    //   if (session.content === '生草合并消息制作') {
-    //     debug('生草')
-    //     session.send(
-    //       <spl>
-    //         <img src="https://meme.3sqrt7.com/api/image"/>
-    //         <img src="https://meme.3sqrt7.com/api/image"/>
-    //         <img src="https://meme.3sqrt7.com/api/image"/>
-    //         <img src="https://meme.3sqrt7.com/api/image"/>
-    //         <img src="https://meme.3sqrt7.com/api/image"/>
-    //         <img src="https://meme.3sqrt7.com/api/image"/>
-    //         <img src="https://meme.3sqrt7.com/api/image"/>
-    //         <img src="https://meme.3sqrt7.com/api/image"/>
-    //       </spl>
-    //     )
-    //   }
-    // })
-
 }
