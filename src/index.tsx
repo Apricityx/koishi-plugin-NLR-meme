@@ -28,15 +28,6 @@ export function apply(ctx: Context, config: Config) {
         return divs;
     }
 
-    // ctx.command('test').action(({session}) => {
-    //     deTbug('test')
-    //     // 等待5s
-    //
-    //     // session.send('欢迎 ' + h('message', { id: session.userId }) + ' 入群！')
-    //     // session.send('test')
-    //     // session.send('dwqdwqdwd' + h('at', {id: 2022784837}))
-    //
-    // })
     //如果文件夹./meme不存在则创建
     const botId = config['botId']
     const avatarPath = "https://q1.qlogo.cn/g?b=qq&nk=" + botId + "&s=100"
@@ -76,11 +67,19 @@ export function apply(ctx: Context, config: Config) {
         </>)
     })
     ctx.command('生好多草 [arg:number]').action(({session}, arg) => {
+        if (arg == undefined) {
+            session.send('指令用法：生好多草 [次数]\n例如：生好多草 10')
+            return
+        }
         if (arg > 50) {
             session.send('太多了，我生不动了')
             return
         } else {
-            session.send('生草' + arg + '次')
+            let content = '';
+            for (let i = 0; i < arg; i++) {
+                content += '草'
+            }
+            session.send(content)
             session.send(<>
                 <message forward>
                     {content_generator(arg)}
