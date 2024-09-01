@@ -1,13 +1,13 @@
 {
-  "name": "koishi-plugin-nlr-meme",
-  "description": "输入生草来获取一张草图",
+  "name": "koishi-plugin-nlr-meme-jpeg",
+  "description": "forked from Apricityx/koishi-plugin-NLR-meme",
   "version": "1.1.7",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
-  "homepage": "https://github.com/Apricityx/koishi-plugin-NLR-meme.git",
+  "homepage": "https://github.com/usfese/koishi-plugin-NLR-meme.git",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Apricityx/koishi-plugin-NLR-meme.git"
+    "url": "git+https://github.com/usfese/koishi-plugin-NLR-meme.git"
   },
   "files": [
     "lib",
@@ -24,10 +24,11 @@
     "草图"
   ],
   "peerDependencies": {
-    "koishi": "^4.16.4"
-  },
-  "dependencies": {
+    "koishi": "^4.16.4",
     "node-fetch": "^3.3.2",
     "sharp": "^0.33.5"
+  },
+  "dependencies": {
+
   }
 }
