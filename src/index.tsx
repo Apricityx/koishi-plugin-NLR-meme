@@ -1,94 +1,126 @@
-import { Context, Schema, h } from 'koishi'
+import {Context, Schema, h} from 'koishi'
 import sharp from 'sharp';
+import fetch from 'node-fetch';
 
 export const name = 'nrl-meme'
 
 export interface Config {
-
+  api_url: string,
+  debug: boolean,
+  enable_convert: boolean,
+  jpgQuality: number,
 }
 
-export const Config: Schema<Config> = Schema.object({
-  // meme_path: Schema.string().description('存储路径：').default('./meme'),
-  api_url: Schema.string().description('API地址').default('https://meme.3sqrt7.com/api/image'),
-  debug: Schema.boolean().description('是否启动调试模式').default(false),
-})
+export const Config: Schema = Schema.intersect([
+  Schema.object({
+    api_url: Schema.string().description('API地址').default('https://meme.3sqrt7.com/api/image'),
+    debug: Schema.boolean().description('是否启动调试模式').default(false),
+  }).description('基础配置'),
+  Schema.object({
+    enable_convert: Schema.boolean().description('是否启用WEBP转JPG再发送（如果遇到奇怪的问题建议开启）').default(false),
+  }).description('高级配置'),
+  Schema.union([
+    Schema.object({
+      enable_convert: Schema.const(true).required(),
+      jpgQuality: Schema.number().role('slider').min(1).max(100).step(1).description('JPG图像质量（转JPG开启后生效）').default(90),
+    }),
+    Schema.object({}),
+  ])
+])
+
+// export const Config: Schema<Config> = Schema.object({
+//   enableCovert: Schema.boolean().description('是否启用WEBP转JPG再发送（如果遇到奇怪的问题建议开启）').default(false),
+//   jpgQuality: Schema.number().description('JPG图像质量（转JPG开启后生效）').default(90),
+// })
 
 export function apply(ctx: Context, config: Config) {
-  function content_generator(time) {
-    deTbug('content_generator启动');
+  const logger = ctx.logger('NRL-meme')
+  const ifDebug = config.debug
+  outputDebug(config);
+  const getRandomUrl = () => {
+    const defaultUrl = config.api_url
+    const randomNum = Math.floor(Math.random() * 100)
+    return defaultUrl + '?' + randomNum
+  }
+  const content_generator = async (time: number) => {
+    outputDebug('content_generator启动');
     let divs = [];
     for (let i = 0; i < time; i++) {
-      fetch(url).then(res => {
-        res.arrayBuffer().then(buffer => {
-          sharp(buffer).jpeg().toBuffer().then(buffer => {
-            divs.push(<message>
-              <author id="3026194904" name="Apricityx" avatar="url" />
-              <img src={'data:image/png;base64,' + buffer.toString('base64')} />
-            </message>);
-          });
-        });
-      })
-
-
+      if (config.enable_convert) {
+        const response = await fetch(getRandomUrl());
+        const webpBuffer = await response.arrayBuffer();
+        const jpgBuffer = await sharp(Buffer.from(webpBuffer))
+          .jpeg({quality: config.jpgQuality})
+          .toBuffer();
+        const base64Image = `data:image/jpeg;base64,${jpgBuffer.toString('base64')}`;
+        divs.push(<message>
+          <author id="3026194904" name="Apricityx" avatar="url"/>
+          <img src={base64Image} alt="Image"/></message>);
+      } else {
+        divs.push(<message>
+          <author id="3026194904" name="Apricityx" avatar="url"/>
+          <img src={getRandomUrl()} alt={"Image"}/></message>);
+      }
     }
     return divs;
   }
 
   //如果文件夹./meme不存在则创建
-  const botId = config['botId']
-  const avatarPath = "https://q1.qlogo.cn/g?b=qq&nk=" + botId + "&s=100"
+  // const botId = config['botId']
+  // const avatarPath = "https://q1.qlogo.cn/g?b=qq&nk=" + botId + "&s=100"
   // const memePath = config['meme_path']
   // if (!fs.existsSync(memePath)) {
   //   fs.mkdirSync(memePath)
   // }
-  const ifDebug = config['debug']
-  const logger = ctx.logger('NRL-meme')
-  const url = config['api_url']
-  ctx.command('生草').action(({ session }) => {
+  ctx.command('生草').action(async ({session}) => {
     // sendMeme(session)
-    deTbug('草')
-    session.send(h('img', { src: url }))
-  })
-  ctx.command('生中草').action(({ session }) => {
-    // sendMeme(session)
-    session.send(<>
-      <message forward>
-        {content_generator(5)}
+    outputDebug('草')
+    await session.send(<>
+      <message>
+        {await content_generator(1)}
       </message>
     </>)
   })
-  ctx.command('生大草').action(({ session }) => {
+  ctx.command('生中草').action(async ({session}) => {
     // sendMeme(session)
-    session.send(<>
+    await session.send(<>
       <message forward>
-        {content_generator(10)}
+        {await content_generator(5)}
       </message>
     </>)
   })
-  ctx.command('生巨草').action(({ session }) => {
-    session.send(<>
+  ctx.command('生大草').action(async ({session}) => {
+    // sendMeme(session)
+    await session.send(<>
       <message forward>
-        {content_generator(20)}
+        {await content_generator(10)}
       </message>
     </>)
   })
-  ctx.command('生好多草 [arg:number]').action(({ session }, arg) => {
+  ctx.command('生巨草').action(async ({session}) => {
+    await session.send(<>
+      <message forward>
+        {await content_generator(20)}
+      </message>
+    </>)
+  })
+  ctx.command('生好多草 [arg:number]').action(async ({session}, arg) => {
     if (arg == undefined) {
-      session.send('指令用法：生好多草 [次数]\n例如：生好多草 10')
+      await session.send('指令用法：生好多草 [次数]\n例如：生好多草 10')
       return
     }
     if (arg > 50) {
-      session.send('太多了，我生不动了')
+      await session.send('太多了，我生不动了')
       return
     } else {
       let content = '';
       for (let i = 0; i < arg; i++) {
         content += '草'
       }
-      session.send(content)
-      session.send(<>
+      await session.send(content)
+      await session.send(<>
         <message forward>
-          {content_generator(arg)}
+          {await content_generator(arg)}
         </message>
       </>)
     }
@@ -118,7 +150,7 @@ export function apply(ctx: Context, config: Config) {
   //   })
   // }
 
-  function deTbug(text: any) {
+  function outputDebug(text: any) {
     if (ifDebug)
       logger.success(text)
   }

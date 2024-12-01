@@ -1,7 +1,7 @@
 {
   "name": "koishi-plugin-nlr-meme",
   "description": "输入生草来获取一张草图",
-  "version": "1.2.0",
+  "version": "1.2.2",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
   "homepage": "https://github.com/Apricityx/koishi-plugin-NLR-meme.git",
