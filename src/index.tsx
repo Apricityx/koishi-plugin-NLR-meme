@@ -1,13 +1,10 @@
 import { Context, Schema, h } from 'koishi'
-import fetch from 'node-fetch';
-import { writeFile } from 'fs';
-import * as fs from 'fs';
-import { join } from 'path';
 import sharp from 'sharp';
 
 export const name = 'nrl-meme'
 
 export interface Config {
+
 }
 
 export const Config: Schema<Config> = Schema.object({
